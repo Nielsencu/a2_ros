@@ -77,7 +77,7 @@ def generate_launch_description():
         package='a2_locomotion_controller',
         executable='locomotion_executor',
         output='screen',
-        parameters=[{'use_sim_time': False}],
+        parameters=[{'use_sim_time': True}],
     )
 
     # sim_clock_node = Node(
@@ -134,8 +134,9 @@ def generate_launch_description():
         executable='teleop_joy',
         output='screen',
         parameters=[{
-            'linear_speed_limit': 0.5,
-            'angular_speed_limit': 1.0,
+            'linear_x_limit':  0.5,
+            'linear_y_limit':  0.5,
+            'angular_z_limit': 1.0,
         }]
     )
 
