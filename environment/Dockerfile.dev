@@ -17,6 +17,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     build-essential \
     wget
 
+RUN apt-get update && apt install -y libnvidia-gl-580 nvidia-utils-580
+
 # MuJoCo (architecture-matched: uname -m yields x86_64 / aarch64, which match
 # the MuJoCo release asset names directly).
 RUN mkdir -p /opt/mujoco && \
