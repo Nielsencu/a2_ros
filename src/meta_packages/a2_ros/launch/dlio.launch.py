@@ -118,7 +118,7 @@ def generate_launch_description():
         DeclareLaunchArgument('dynamic_filter_max_range', default_value='10.0'),
         DeclareLaunchArgument('num_threads', default_value='4'),
         DeclareLaunchArgument('pointcloud_queue_size', default_value='50'),
-        DeclareLaunchArgument('map_crop_enabled', default_value='true'),
+        DeclareLaunchArgument('map_crop_enabled', default_value='false'),
         DeclareLaunchArgument('rviz', default_value='false'),
         odom_node,
         map_node,
