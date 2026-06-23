@@ -20,7 +20,7 @@ tare_planner_node:
     kRushHome : false               # return to start when near home after exploration finishes
     kUseTerrainHeight : true        # use terrain map height for terrain-aware planning
     kCheckTerrainCollision : true   # reject terrain points above kTerrainCollisionThreshold as obstacles
-    kExtendWayPoint : true          # extend lookahead waypoint further if it is within extend distance
+    kExtendWayPoint : false          # extend lookahead waypoint further if it is within extend distance
     kUseLineOfSightLookAheadPoint : true  # require line-of-sight to lookahead point; pick alternative if blocked
     kNoExplorationReturnHome : false      # return to start when exploration is complete
     kExtendWayPointDistanceBig : 4.0     # extension distance when waypoint has line-of-sight (m)
@@ -29,7 +29,7 @@ tare_planner_node:
     kRushHomeDist : 10.0            # distance to home below which rush-home activates (m)
     kAtHomeDistThreshold : 0.5      # distance to consider robot arrived at home (m)
     kTerrainCollisionThreshold : 0.3     # terrain point intensity above this is treated as a collision obstacle
-    kLookAheadDistance : 5.0        # distance ahead on path to project lookahead waypoint (m)
+    kLookAheadDistance : 3.0        # distance ahead on path to project lookahead waypoint (m)
     kUseMomentum : false            # bias waypoint selection toward previous travel direction
     kDirectionChangeCounterThr : 6       # consecutive direction changes before momentum switch triggers
     kDirectionNoChangeCounterThr : 5     # steps without direction change before stuck detection triggers
@@ -73,8 +73,8 @@ tare_planner_node:
     viewpoint_manager/number_x : 10    # viewpoint grid cells in X
     viewpoint_manager/number_y : 10    # viewpoint grid cells in Y
     viewpoint_manager/number_z : 1     # viewpoint grid cells in Z (1 = 2-D planning)
-    viewpoint_manager/resolution_x : 0.8  # viewpoint cell size X (m)
-    viewpoint_manager/resolution_y : 0.8  # viewpoint cell size Y (m)
+    viewpoint_manager/resolution_x : 0.6  # viewpoint cell size X (m)
+    viewpoint_manager/resolution_y : 0.6  # viewpoint cell size Y (m)
     viewpoint_manager/resolution_z : 0.0  # viewpoint cell size Z (m)
     kConnectivityHeightDiffThr : 0.25     # max height difference for two viewpoints to be connected (m)
     kGreedyViewPointSampleRange : 3       # candidates sampled per greedy selection step
