@@ -22,4 +22,6 @@ tmux new-session -d -s "$SESSION" -n foxglove 'a2 foxglove' \; \
   new-window -n dlio a2 dlio  \; \
   new-window -n bag  \; \
   split-window -h -t "$SESSION":bag  \; \
+  send-keys -t "$SESSION":bag.0 'ros2 service call /save_pcd direct_lidar_inertial_odometry/srv/SavePCD "{leaf_size: 0.10, save_path: \"$MAP_DIR\"}"' \; \
+  select-pane -t "$SESSION":bag.1 \; \
   attach-session -t "$SESSION"
