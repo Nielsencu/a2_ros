@@ -30,7 +30,7 @@ tare_planner_node:
     kAtHomeDistThreshold : 0.5      # distance to consider robot arrived at home (m)
     kTerrainCollisionThreshold : 0.35     # terrain point intensity above this is treated as a collision obstacle
     kLookAheadDistance : 3.0        # distance ahead on path to project lookahead waypoint (m)
-    kUseMomentum : false            # bias waypoint selection toward previous travel direction
+    kUseMomentum : true            # bias waypoint selection toward previous travel direction
     kDirectionChangeCounterThr : 6       # consecutive direction changes before momentum switch triggers
     kDirectionNoChangeCounterThr : 5     # steps without direction change before stuck detection triggers
     kResetWaypointJoystickAxesID : 2     # joystick axis index that manually resets the waypoint
@@ -108,7 +108,7 @@ tare_planner_node:
     kMinAddPointNumBig : 40       # min new coverage points for a significant coverage increment
     kMinAddFrontierPointNum : 10  # min points for a frontier cell to remain active
     kCellExploringToCoveredThr : 1    # coverage count to transition cell: exploring → covered
-    kCellCoveredToExploringThr : 10   # coverage count drop to revert cell: covered → exploring
+    kCellCoveredToExploringThr : 15   # coverage count drop to revert cell: covered → exploring
     kCellExploringToAlmostCoveredThr : 10   # coverage count for exploring → almost-covered
     kCellAlmostCoveredToExploringThr : 20   # coverage count drop to revert: almost-covered → exploring
     kCellUnknownToExploringThr : 1    # coverage count to activate unknown cell as exploring
