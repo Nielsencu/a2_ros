@@ -20,7 +20,7 @@ tare_planner_node:
     kRushHome : false               # return to start when near home after exploration finishes
     kUseTerrainHeight : true        # use terrain map height for terrain-aware planning
     kCheckTerrainCollision : true   # reject terrain points above kTerrainCollisionThreshold as obstacles
-    kExtendWayPoint : false          # extend lookahead waypoint further if it is within extend distance
+    kExtendWayPoint : true          # extend lookahead waypoint further if it is within extend distance
     kUseLineOfSightLookAheadPoint : true  # require line-of-sight to lookahead point; pick alternative if blocked
     kNoExplorationReturnHome : false      # return to start when exploration is complete
     kExtendWayPointDistanceBig : 4.0     # extension distance when waypoint has line-of-sight (m)
@@ -28,7 +28,7 @@ tare_planner_node:
     kKeyposeCloudDwzFilterLeafSize : 0.2 # voxel leaf size for downsampling keypose / registered scan clouds (m)
     kRushHomeDist : 10.0            # distance to home below which rush-home activates (m)
     kAtHomeDistThreshold : 0.5      # distance to consider robot arrived at home (m)
-    kTerrainCollisionThreshold : 0.3     # terrain point intensity above this is treated as a collision obstacle
+    kTerrainCollisionThreshold : 0.35     # terrain point intensity above this is treated as a collision obstacle
     kLookAheadDistance : 3.0        # distance ahead on path to project lookahead waypoint (m)
     kUseMomentum : false            # bias waypoint selection toward previous travel direction
     kDirectionChangeCounterThr : 6       # consecutive direction changes before momentum switch triggers
