@@ -42,15 +42,24 @@ def generate_launch_description():
     a2_ros_dir      = get_package_share_directory('a2_ros')
     rviz_path        = os.path.join(a2_ros_dir, 'rviz', 'exploration.rviz')
     tare_config      = os.path.join(a2_ros_dir, 'config', 'autonomy', 'tare_a2.yaml')
+    workspace_root   = a2_ros_dir.split('/install/')[0]
+    vis_log_dir      = os.path.join(workspace_root, 'src', 'meta_packages', 'a2_ros', 'log')
+    os.makedirs(vis_log_dir, exist_ok=True)
 
     rviz_arg = DeclareLaunchArgument(
         'rviz',
         default_value='true',
         description='Launch RViz2'
     )
+    visualization_map_file_arg = DeclareLaunchArgument(
+        'visualization_map_file',
+        default_value='',
+        description='Optional .ply map used by visualization_tools for /overall_map'
+    )
 
     nodes = [
         rviz_arg,
+        visualization_map_file_arg,
         SetParameter(name='use_sim_time', value=False),
 
         # ---- terrain analysis (local map) ----
@@ -208,6 +217,26 @@ def generate_launch_description():
             name='tare_planner_node',
             output='screen',
             parameters=[tare_config],
+        ),
+
+        # ---- visualization tools (/overall_map, /explored_areas, /trajectory) ----
+        Node(
+            package='visualization_tools',
+            executable='visualizationTools',
+            name='visualizationTools',
+            output='screen',
+            parameters=[{
+                'metricFile': os.path.join(workspace_root, 'install', 'meta_packages', 'a2_ros', 'log', 'metrics'),
+                'trajFile': os.path.join(workspace_root, 'install', 'meta_packages', 'a2_ros', 'log', 'trajectory'),
+                'mapFile': LaunchConfiguration('visualization_map_file'),
+                'overallMapVoxelSize': 0.5,
+                'exploredAreaVoxelSize': 0.3,
+                'exploredVolumeVoxelSize': 0.5,
+                'transInterval': 0.2,
+                'yawInterval': 10.0,
+                'overallMapDisplayInterval': 2,
+                'exploredAreaDisplayInterval': 1,
+            }],
         ),
 
 
