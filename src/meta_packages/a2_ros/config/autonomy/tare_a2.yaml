@@ -24,7 +24,7 @@ tare_planner_node:
     kUseLineOfSightLookAheadPoint : true  # require line-of-sight to lookahead point; pick alternative if blocked
     kNoExplorationReturnHome : false      # return to start when exploration is complete
     kExtendWayPointDistanceBig : 4.0     # extension distance when waypoint has line-of-sight (m)
-    kExtendWayPointDistanceSmall : 2.5   # extension distance when waypoint does not have line-of-sight (m)
+    kExtendWayPointDistanceSmall : 1.5   # extension distance when waypoint does not have line-of-sight (m)
     kKeyposeCloudDwzFilterLeafSize : 0.2 # voxel leaf size for downsampling keypose / registered scan clouds (m)
     kRushHomeDist : 10.0            # distance to home below which rush-home activates (m)
     kAtHomeDistThreshold : 0.5      # distance to consider robot arrived at home (m)
@@ -93,10 +93,10 @@ tare_planner_node:
     kCheckDynamicObstacleCollision : false  # check collision against recent obstacle frames (for dynamic envs)
     kCollisionFrameCountMax : 3             # history frames used for dynamic obstacle collision check
 
-    kSensorRange : 10.0          # max range used for coverage calculations — matches lidar cutoff (m)
+    kSensorRange : 6.0          # max range used for coverage calculations — matches lidar cutoff (m)
     kNeighborRange : 2.5         # search radius for viewpoint connectivity (m)
     kCoverageOcclusionThr : 0.3  # distance threshold for occlusion in coverage calculation (m)
-    kCoverageDilationRadius : 0.8  # dilation radius applied to covered area (m)
+    kCoverageDilationRadius : 0.6  # dilation radius applied to covered area (m)
 
     # Grid World — coarse global map tracking exploration state per cell
     kGridWorldXNum : 121          # global grid cells in X (total X = XNum * CellHeight)
