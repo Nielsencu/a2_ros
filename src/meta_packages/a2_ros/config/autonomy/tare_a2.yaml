@@ -43,8 +43,8 @@ tare_planner_node:
     kUseCoverageBoundaryOnObjectSurface : false  # clip keypose cloud to coverage boundary polygon
 
     # Rolling occupancy grid (used for frontier detection)
-    rolling_occupancy_grid/resolution_x : 0.2  # grid cell size X (m)
-    rolling_occupancy_grid/resolution_y : 0.2  # grid cell size Y (m)
+    rolling_occupancy_grid/resolution_x : 0.05  # grid cell size X (m)
+    rolling_occupancy_grid/resolution_y : 0.05  # grid cell size Y (m)
     rolling_occupancy_grid/resolution_z : 0.2  # grid cell size Z (m)
 
     kSurfaceCloudDwzLeafSize : 0.3      # voxel leaf size for surface cloud downsampling (m)
@@ -65,38 +65,40 @@ tare_planner_node:
     keypose_graph/kAddEdgeConnectDistThr : 2.0       # max distance to connect two nearby nodes with an edge (m)
     keypose_graph/kAddEdgeToLastKeyposeDistThr : 2.0 # max distance to connect node to last keypose (m)
     keypose_graph/kAddEdgeVerticalThreshold : 0.5    # max vertical gap for a valid graph edge (m)
-    keypose_graph/kAddEdgeCollisionCheckResolution : 0.3  # step size for edge collision checks (m)
+    
+    
+    keypose_graph/kAddEdgeCollisionCheckResolution : 0.1  # step size for edge collision checks (m)
     keypose_graph/kAddEdgeCollisionCheckRadius : 0.3      # sphere radius for edge collision checks (m)
     keypose_graph/kAddEdgeCollisionCheckPointNumThr : 1   # collision points needed to reject an edge
 
     # ViewPointManager — grid of candidate sensor poses for coverage planning
-    viewpoint_manager/number_x : 20    # viewpoint grid cells in X
-    viewpoint_manager/number_y : 20    # viewpoint grid cells in Y
+    viewpoint_manager/number_x : 250    # viewpoint grid cells in X
+    viewpoint_manager/number_y : 250    # viewpoint grid cells in Y
     viewpoint_manager/number_z : 1     # viewpoint grid cells in Z (1 = 2-D planning)
-    viewpoint_manager/resolution_x : 0.3  # viewpoint cell size X (m)
-    viewpoint_manager/resolution_y : 0.3  # viewpoint cell size Y (m)
+    viewpoint_manager/resolution_x : 0.1  # viewpoint cell size X (m)
+    viewpoint_manager/resolution_y : 0.1  # viewpoint cell size Y (m)
     viewpoint_manager/resolution_z : 0.0  # viewpoint cell size Z (m)
     kConnectivityHeightDiffThr : 0.25     # max height difference for two viewpoints to be connected (m)
     kGreedyViewPointSampleRange : 3       # candidates sampled per greedy selection step
-    kLocalPathOptimizationItrMax : 10     # TSP optimization iterations for local path ordering
+    kLocalPathOptimizationItrMax : 5     # TSP optimization iterations for local path ordering
     kViewPointCollisionMargin : 0.3       # XY safety margin around each viewpoint for collision (m) — ~A2 half-width
     kViewPointCollisionMarginZPlus : 0.4  # upward Z margin for viewpoint collision check (m)
     kViewPointCollisionMarginZMinus : 0.3 # downward Z margin for viewpoint collision check (m)
     kCollisionGridZScale : 1.0            # Z scale factor applied to collision grid
-    kCollisionGridResolutionX : 0.2       # collision grid cell size X (m)
-    kCollisionGridResolutionY : 0.2       # collision grid cell size Y (m)
+    kCollisionGridResolutionX : 0.1       # collision grid cell size X (m)
+    kCollisionGridResolutionY : 0.1       # collision grid cell size Y (m)
     kCollisionGridResolutionZ : 0.0       # collision grid cell size Z (m)
     kCollisionPointThr : 1                # min collision points in a cell to mark viewpoint in collision
-    kLineOfSightStopAtNearestObstacle : true          # stop line-of-sight ray at first hit rather than end point
+    kLineOfSightStopAtNearestObstacle : false          # stop line-of-sight ray at first hit rather than end point
     kViewPointHeightFromTerrain : 0.5                 # viewpoint height above terrain — matches A2 sensor height (m)
     kViewPointHeightFromTerrainChangeThreshold : 0.4  # terrain height change needed to update viewpoint height (m)
     kCheckDynamicObstacleCollision : false  # check collision against recent obstacle frames (for dynamic envs)
     kCollisionFrameCountMax : 3             # history frames used for dynamic obstacle collision check
 
-    kSensorRange : 10.0          # max range used for coverage calculations — matches lidar cutoff (m)
-    kNeighborRange : 2.5         # search radius for viewpoint connectivity (m)
+    kSensorRange : 5.0          # max range used for coverage calculations — matches lidar cutoff (m)
+    kNeighborRange : 3.0         # search radius for viewpoint connectivity (m)
     kCoverageOcclusionThr : 0.3  # distance threshold for occlusion in coverage calculation (m)
-    kCoverageDilationRadius : 0.8  # dilation radius applied to covered area (m)
+    kCoverageDilationRadius : 1.0  # dilation radius applied to covered area (m)
 
     # Grid World — coarse global map tracking exploration state per cell
     kGridWorldXNum : 121          # global grid cells in X (total X = XNum * CellHeight)
@@ -112,6 +114,7 @@ tare_planner_node:
     kCellExploringToAlmostCoveredThr : 10   # coverage count for exploring → almost-covered
     kCellAlmostCoveredToExploringThr : 20   # coverage count drop to revert: almost-covered → exploring
     kCellUnknownToExploringThr : 1    # coverage count to activate unknown cell as exploring
+
 
     # Visualization only — no effect on planning
     kExploringSubspaceMarkerColorGradientAlpha : true

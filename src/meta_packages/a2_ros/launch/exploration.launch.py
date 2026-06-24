@@ -132,8 +132,8 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'pathFolder':          get_package_share_directory('local_planner') + '/paths',
-                'vehicleLength':       0.65,
-                'vehicleWidth':        0.40,
+                'vehicleLength':       0.82,
+                'vehicleWidth':        0.44,
                 'sensorOffsetX':       0.0,
                 'sensorOffsetY':       0.0,
                 'twoWayDrive':         False,
