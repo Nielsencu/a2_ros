@@ -68,11 +68,22 @@ ament_target_dependencies(scan_pose_sync
   geometry_msgs
 )
 
+# home_return_mux node (TARE -> FAR return-home waypoint handoff)
+add_executable(home_return_mux
+  src/home_return_mux.cpp
+)
+ament_target_dependencies(home_return_mux
+  rclcpp
+  geometry_msgs
+  std_msgs
+)
+
 install(TARGETS
   stand_example
   teleop_joy
   nav_vel_relay
   scan_pose_sync
+  home_return_mux
   DESTINATION lib/${PROJECT_NAME}
 )
 
