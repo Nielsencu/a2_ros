@@ -4,10 +4,13 @@
 #
 # If the a2_ros_nuc container is not running, `docker compose up -d` it;
 # otherwise just `docker compose exec` into the existing one. Inside the
-# container it creates (or attaches to) a tmux session "a2" with three windows:
-#   1: nuc       -> ros2 launch a2_ros nuc.launch.py
-#   2: foxglove  -> a2 foxglove
-#   3: shell     -> empty shell, split into two panes
+# container it creates (or attaches to) a tmux session "a2" with two windows:
+#   1: nuc    -> ros2 launch a2_ros nuc.launch.py
+#   2: shell  -> 2x2 grid of four panes:
+#                pane 1: ros2 launch resple resple_ss26.launch.py map_saving_node:=true (auto-run)
+#                pane 2: a2 explore                 (pre-typed, press Enter to start)
+#                pane 3: bash ./scripts/save_map.sh (pre-typed, run when mapping is done)
+#                pane 4: empty shell (active)
 #
 # Usage: ./scripts/run_robot.sh
 
@@ -39,14 +42,30 @@ if tmux has-session -t "$SESSION" 2>/dev/null; then
   exec tmux attach-session -t "$SESSION"
 fi
 
-tmux new-session  -d -s "$SESSION" -n nuc      "bash -i"
-tmux new-window      -t "$SESSION"  -n foxglove "bash -i"
-tmux new-window      -t "$SESSION"  -n shell    "bash -i"
-tmux split-window -h -t "$SESSION":shell        "bash -i"
+# Window 1: nuc — the NUC launch (locomotion, drivers, etc.).
+tmux new-session -d -s "$SESSION" -n nuc "bash -i"
+tmux send-keys   -t "$SESSION":nuc "ros2 launch a2_ros nuc.launch.py" C-m
 
-tmux send-keys -t "$SESSION":nuc      "ros2 launch a2_ros nuc.launch.py" C-m
-tmux send-keys -t "$SESSION":foxglove "a2 foxglove" C-m
+# Window 2: shell — 2x2 grid of four panes. send-keys targets the active pane,
+# which is always the one just created by the preceding split.
+tmux new-window   -t "$SESSION" -n shell "bash -i"
+tmux send-keys    -t "$SESSION":shell "ros2 launch resple resple_ss26.launch.py map_saving_node:=true" C-m
 
-tmux select-window -t "$SESSION":nuc
+# Pre-typed, NOT auto-run: explore moves the robot; save_map only makes sense
+# after mapping. Press Enter in each pane when you are ready.
+tmux split-window -t "$SESSION":shell "bash -i"
+tmux send-keys    -t "$SESSION":shell "a2 explore"
+
+tmux split-window -t "$SESSION":shell "bash -i"
+tmux send-keys    -t "$SESSION":shell "bash ./scripts/save_map.sh"
+
+tmux select-layout -t "$SESSION":shell tiled
+
+# Fourth pane: empty shell, left as the active pane.
+tmux split-window -t "$SESSION":shell "bash -i"
+tmux select-layout -t "$SESSION":shell tiled
+
+# Attach with the empty fourth pane of the shell window active.
+tmux select-window -t "$SESSION":shell
 exec tmux attach-session -t "$SESSION"
 '
