@@ -75,6 +75,11 @@ def generate_launch_description():
         'world_frame', default_value='map',
         description='Frame the home goal is published in (must match /state_estimation)'
     )
+    num_mins_before_return_arg = DeclareLaunchArgument(
+        'num_mins_before_return', default_value='0.0',
+        description='Force return-home after this many minutes of exploration '
+                    '(0 = wait for TARE to finish; never time out)'
+    )
     graph_decoder_arg = DeclareLaunchArgument(
         'graph_decoder', default_value='true',
         description='Launch the FAR graph_decoder (visibility-graph visualization)'
@@ -88,6 +93,7 @@ def generate_launch_description():
         home_y_arg,
         home_z_arg,
         world_frame_arg,
+        num_mins_before_return_arg,
         graph_decoder_arg,
         SetParameter(name='use_sim_time', value=False),
 
@@ -293,6 +299,7 @@ def generate_launch_description():
                 'home_y':              ParameterValue(LaunchConfiguration('home_y'), value_type=float),
                 'home_z':              ParameterValue(LaunchConfiguration('home_z'), value_type=float),
                 'world_frame':         ParameterValue(LaunchConfiguration('world_frame'), value_type=str),
+                'num_mins_before_return': ParameterValue(LaunchConfiguration('num_mins_before_return'), value_type=float),
                 'goal_repub_period_s': 1.0,
             }],
         ),

@@ -19,6 +19,10 @@
 // back. FAR ignores goals until its visibility graph is initialised, so the goal
 // is re-published on a timer until FAR reports /far_reach_goal_status == true.
 //
+// The same handoff also fires on a timeout: if num_mins_before_return > 0 and
+// exploration has been running that long without TARE reporting finished, the
+// node switches to FAR anyway so the robot can't get stuck exploring forever.
+//
 // The handoff is one-way: once returning home, the node stays in FAR mode.
 class HomeReturnMux : public rclcpp::Node {
 public:
@@ -29,6 +33,15 @@ public:
     home_z_      = declare_parameter<double>("home_z", 0.0);
     world_frame_ = declare_parameter<std::string>("world_frame", "map");
     const double repub_period = declare_parameter<double>("goal_repub_period_s", 1.0);
+
+    // Safety timeout: if exploration runs this many minutes without TARE
+    // reporting it has finished, force the return-home handoff anyway so we
+    // never explore forever. <= 0 disables it (return only on /exploration_finish).
+    // Counted from node startup, which is when the exploration stack is launched.
+    const double num_mins_before_return =
+      declare_parameter<double>("num_mins_before_return", 0.0);
+    return_timeout_s_   = num_mins_before_return * 60.0;
+    explore_start_time_ = now();
 
     way_point_pub_ = create_publisher<geometry_msgs::msg::PointStamped>("way_point", 5);
     goal_pub_      = create_publisher<geometry_msgs::msg::PointStamped>("goal_point", 5);
@@ -61,20 +74,42 @@ public:
 
     goal_timer_ = create_wall_timer(
       std::chrono::duration<double>(repub_period),
-      [this]() { if (returning_home_ && !reached_home_) publishGoal(); });
+      [this]() {
+        if (returning_home_) {
+          if (!reached_home_) publishGoal();
+        } else if (return_timeout_s_ > 0.0 &&
+                   (now() - explore_start_time_).seconds() >= return_timeout_s_) {
+          triggerReturnHome("Exploration time limit reached");
+        }
+      });
+
+    // Periodic status line: elapsed mission time + current state. <= 0 disables.
+    const double status_period = declare_parameter<double>("status_print_period_s", 5.0);
+    if (status_period > 0.0) {
+      status_timer_ = create_wall_timer(
+        std::chrono::duration<double>(status_period),
+        [this]() { printStatus(); });
+    }
   }
 
 private:
   void finishCallback(const std_msgs::msg::Bool::SharedPtr msg)
   {
-    if (msg->data && !returning_home_) {
-      returning_home_ = true;
-      RCLCPP_INFO(get_logger(),
-                  "Exploration finished -> switching to FAR planner, returning "
-                  "home to (%.2f, %.2f, %.2f) in frame '%s'.",
-                  home_x_, home_y_, home_z_, world_frame_.c_str());
-      publishGoal();  // send the goal immediately, then keep re-sending on timer
-    }
+    if (msg->data) triggerReturnHome("Exploration finished");
+  }
+
+  // Latch into return-home mode and send the home goal. Idempotent: whichever
+  // trigger fires first (TARE finish or the time limit) wins; later calls are
+  // no-ops, keeping the handoff one-way.
+  void triggerReturnHome(const std::string & reason)
+  {
+    if (returning_home_) return;
+    returning_home_ = true;
+    RCLCPP_INFO(get_logger(),
+                "%s -> switching to FAR planner, returning home to "
+                "(%.2f, %.2f, %.2f) in frame '%s'.",
+                reason.c_str(), home_x_, home_y_, home_z_, world_frame_.c_str());
+    publishGoal();  // send the goal immediately, then keep re-sending on timer
   }
 
   void publishGoal()
@@ -88,10 +123,28 @@ private:
     goal_pub_->publish(goal);
   }
 
+  void printStatus()
+  {
+    const double elapsed = (now() - explore_start_time_).seconds();
+    if (returning_home_) {
+      RCLCPP_INFO(get_logger(), "[%6.1fs] state=RETURNING_HOME reached_home=%s",
+                  elapsed, reached_home_ ? "true" : "false");
+    } else if (return_timeout_s_ > 0.0) {
+      double remaining = return_timeout_s_ - elapsed;
+      if (remaining < 0.0) remaining = 0.0;
+      RCLCPP_INFO(get_logger(), "[%6.1fs] state=EXPLORING (forced return in %.1fs)",
+                  elapsed, remaining);
+    } else {
+      RCLCPP_INFO(get_logger(), "[%6.1fs] state=EXPLORING", elapsed);
+    }
+  }
+
   double home_x_{0.0};
   double home_y_{0.0};
   double home_z_{0.0};
   std::string world_frame_;
+  double return_timeout_s_{0.0};
+  rclcpp::Time explore_start_time_;
   bool returning_home_{false};
   bool reached_home_{false};
 
@@ -102,6 +155,7 @@ private:
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr finish_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr reach_sub_;
   rclcpp::TimerBase::SharedPtr goal_timer_;
+  rclcpp::TimerBase::SharedPtr status_timer_;
 };
 
 int main(int argc, char * argv[])
