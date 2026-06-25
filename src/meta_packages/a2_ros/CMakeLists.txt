@@ -75,6 +75,7 @@ add_executable(home_return_mux
 ament_target_dependencies(home_return_mux
   rclcpp
   geometry_msgs
+  nav_msgs
   std_msgs
 )
 
