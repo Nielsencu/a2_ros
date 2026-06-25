@@ -59,6 +59,7 @@ Robot:
   nav   [--rviz]     Launch navigation stack
   explore [--rviz]   Launch autonomous exploration (TARE)
   dlio  [--rviz]     Launch DLIO LiDAR-inertial odometry
+  resple [--rviz]    Launch RESPLE spline-based LiDAR-inertial odometry
   detect             Launch object detection (YOLO, CPU); _real launch on robot
 
 Introspection:
@@ -189,6 +190,11 @@ case "$CMD" in
         DLIO_ARGS=(rviz:=$RVIZ)
         [ "$A2_MODE" = "sim" ] && DLIO_ARGS+=(use_sim_time:=true)
         ros2 launch a2_ros dlio.launch.py "${DLIO_ARGS[@]}"
+        ;;
+    resple)
+        RESPLE_ARGS=(rviz:=$RVIZ)
+        [ "$A2_MODE" = "sim" ] && RESPLE_ARGS+=(use_sim_time:=true)
+        ros2 launch a2_ros resple.launch.py "${RESPLE_ARGS[@]}"
         ;;
     detect)
         # Object detection (YOLO, runs on CPU). Use the real-robot launch on hardware.
